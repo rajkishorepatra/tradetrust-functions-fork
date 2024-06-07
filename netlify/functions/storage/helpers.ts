@@ -6,38 +6,31 @@ import {
   validateDocument,
   getEncryptedDocument,
 } from "../../utils";
-import { s3Put } from "../../services/s3";
+import { azureBlobPut, azureBlobGet } from "../../services/s3";
 import { SUPPORTED_NETWORKS } from "../../constants";
-import { s3Get } from "../../services/s3";
 
 export const getDocument = async (id: string) => {
-  const document = await s3Get({
-    Bucket: process.env.TT_AWS_BUCKET_NAME,
-    Key: id,
-  });
+  const document = await azureBlobGet(id);
 
   return document;
 };
 
 export const uploadDocument = async (document) => {
   const { chainId } = await validateNetwork(document);
-
+  console.log('first1');
   await validateDocument({
     document,
     network: SUPPORTED_NETWORKS[chainId as CHAIN_ID].name,
   });
-
+  console.log('first2');
   const { encryptedDocument, encryptedDocumentKey } =
     await getEncryptedDocument({
       str: JSON.stringify(document),
     });
+  console.log('first3');
 
   const id = uuid();
-  await s3Put({
-    Bucket: process.env.TT_AWS_BUCKET_NAME,
-    Key: id,
-    Body: JSON.stringify({ document: encryptedDocument }),
-  });
+  await azureBlobPut(id, JSON.stringify({ document: encryptedDocument }));
 
   return {
     id,
@@ -61,11 +54,7 @@ export const uploadDocumentAtId = async (document, documentId: string) => {
       existingKey,
     });
 
-  await s3Put({
-    Bucket: process.env.TT_AWS_BUCKET_NAME,
-    Key: documentId,
-    Body: JSON.stringify({ document: encryptedDocument }),
-  });
+  await azureBlobPut(documentId, JSON.stringify({ document: encryptedDocument }));
 
   return {
     id: documentId,
@@ -78,13 +67,9 @@ export const getQueueNumber = async () => {
   const id = uuid();
   const encryptionKey = generateEncryptionKey();
 
-  await s3Put({
-    Bucket: process.env.TT_AWS_BUCKET_NAME,
-    Key: id,
-    Body: JSON.stringify({
-      key: encryptionKey,
-    }),
-  });
+  await azureBlobPut(id, JSON.stringify({
+    key: encryptionKey,
+  }));
 
   return { key: encryptionKey, id };
 };

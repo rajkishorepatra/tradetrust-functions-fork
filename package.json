@@ -4,6 +4,7 @@
   "description": "API endpoints to use.",
   "main": "index.js",
   "dependencies": {
+    "@azure/storage-blob": "^12.23.0",
     "@govtechsg/oa-encryption": "^1.3.5",
     "@netlify/functions": "^2.0.2",
     "@tradetrust-tt/tradetrust-utils": "^1.13.4",

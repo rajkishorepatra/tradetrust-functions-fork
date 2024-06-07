@@ -12,10 +12,12 @@ router.post("/", async (req: Request, res: Response) => {
   } = req;
 
   try {
+    console.log('first')
     const fragments = await validateDocument({
       document,
       network: network as networkName,
     });
+    console.log('hell12134',fragments)
     res.status(200).json({
       summary: {
         all: isValid(fragments),

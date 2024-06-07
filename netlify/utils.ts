@@ -48,6 +48,7 @@ export const validateNetwork = async (
 ) => {
   if (utils.isWrappedV2Document(document)) {
     const { network } = utils.getData(document);
+    console.log(utils.getData(document))
 
     if (!network) {
       throw new createError(400, ERROR_MESSAGE.DOCUMENT_NETWORK_NOT_FOUND);
@@ -86,8 +87,10 @@ export const validateDocument = async ({
       provider: supportedNetwork.provider(),
     }
   );
+  console.log('hello')
 
   const fragments = await verify(document);
+  console.log(fragments)
 
   if (!isValid(fragments)) {
     throw new createError(400, ERROR_MESSAGE.DOCUMENT_GENERIC_ERROR);
